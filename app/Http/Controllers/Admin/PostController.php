@@ -57,9 +57,43 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $data = $request->except('image');
+
         Post::query()->create($data);
         return redirect()
             ->route('posts.index')
             ->with('message', 'Thêm dữ liệu thành công');
+    }
+
+    public function destroy($id){
+        Post::query()->find($id)->delete();
+
+        return redirect()->route('posts.index')->with('message', 'Xóa dữ liệu thành công');
+    }
+
+    public function edit($id){
+        $post = Post::query()->find($id);
+
+        $categories = Category::all();
+        return view('admin.posts.edit', compact('post', 'categories'));
+    }
+
+    public function update(Request $request, $id){
+        $post = Post::query()->find($id);
+
+        $data = $request->except('image');
+
+        if($request->hasFile('image')){
+            $path_image = $request->file('image')->store('images');
+            $data['image'] = $path_image;
+        }
+
+        $post->update($data);
+
+        return redirect()->back()->with('message', 'Cập nhật dữ liệu thành công');
+    }
+
+    public function trash(){
+        $posts = Post::onlyTrashed();
+        return view('admin.posts.index', compact('posts'));
     }
 }

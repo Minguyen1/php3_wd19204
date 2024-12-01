@@ -3,6 +3,7 @@
 @section('title', 'Trang chủ')
 
 @section('content')
+    <a href="{{ route('logout') }}" class="btn btn-outline-secondary">Đăng xuất</a>
     <div>
         @foreach ($posts as $post)
             <div>

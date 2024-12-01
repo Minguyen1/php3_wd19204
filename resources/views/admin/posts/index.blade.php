@@ -3,6 +3,7 @@
 @section('title', 'Danh sách sản phẩm')
 
 @section('content')
+    <a href="{{ route('logout') }}" class="btn btn-outline-secondary">Đăng xuất</a>
     @session('message')
         <div class="alert alert-success">
             {{ session('message') }}
@@ -29,13 +30,22 @@
                         <th scope="row">{{ $post->id }}</th>
                         <td>{{ $post->title }}</td>
                         <td>
-                            <img src="{{ Storage::url($post->image) }}" width="60" alt="">
+                            <img src="{{ asset('storage/' . $post->image) }}" width="100" alt="">
                         </td>
                         <td>{{ $post->description }}</td>
                         <td>{{ $post->view }}</td>
                         <td>{{ $post->category->name }}</td>
                         <td>
-                            Edit | Delete
+                            <div>
+                                <a href="{{ route('posts.edit', $post->id) }}" class="btn btn-primary">
+                                    Edit
+                                </a>
+                                <form action="{{ route('posts.destroy', $post->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn xóa không?')">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach

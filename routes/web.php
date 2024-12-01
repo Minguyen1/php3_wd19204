@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
+use App\Http\Middleware\CheckAuth;
 use Illuminate\Support\Facades\Route;
 use PhpParser\Node\Expr\PostDec;
 
@@ -31,13 +33,20 @@ Route::delete('/posts/delete/{id}', [PostController::class, 'destroy'])->name('d
 //Test Eloquent
 Route::get('/test', [AdminPostController::class, 'test']);
 //CRUD
-Route::prefix('admin/posts')->group(function () {
-    Route::get('/', [AdminPostController::class, 'index'])->name('posts.index');
+Route::middleware('auth', CheckAuth::class)->prefix('admin/posts')->group(function () {
+    Route::get('/', [AdminPostController::class, 'index'])->name('posts.index')->middleware('auth');
     Route::get('/create', [AdminPostController::class, 'create'])->name('posts.create');
     Route::post('create', [AdminPostController::class, 'store'])->name('posts.store');
     Route::get('/edit/{id}', [AdminPostController::class, 'edit'])->name('posts.edit');
     Route::put('edit/{id}', [AdminPostController::class, 'update'])->name('posts.update');
+    Route::delete('/delete/{id}', [AdminPostController::class, 'destroy'])->name('posts.destroy');
 });
+
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/login', [AuthController::class, 'postLogin']);
+Route::get('/register', [AuthController::class, 'register'])->name('register');
+Route::post('/register', [AuthController::class, 'postRegister']);
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/about', function () {
     return view('about');
